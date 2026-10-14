@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sephora HK Checklist</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      padding-bottom: 40px;
+    }
+
+    .header {
+      background-color: #0f172a;
+      padding: 16px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .badge-top {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #f43f5e;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .counter {
+      background: #1e293b;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background-color: #1e293b;
+      color: #ffffff;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .pill {
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .pill.active {
+      background: #e11d48;
+      color: #ffffff;
+      border-color: #e11d48;
+    }
+
+    .content-container {
+      padding: 16px;
+      background-color: #f8fafc;
+      color: #0f172a;
+      min-height: 400px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #64748b;
+      margin: 16px 0 10px 0;
+    }
+
+    .section-title:first-child {
+      margin-top: 0;
+    }
+
+    .item-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      display: flex;
+      gap: 12px;
+    }
+
+    .item-card.checked {
+      opacity: 0.4;
+      background: #f1f5f9;
+    }
+
+    .checkbox {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    .item-card.checked .checkbox {
+      background-color: #e11d48;
+      border-color: #e11d48;
+    }
+
+    .item-card.checked .checkbox::after {
+      content: "✓";
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .item-details {
+      flex: 1;
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 14px;
+      color: #0f172a;
+    }
+
+    .product-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+
+    .tags {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .tag-warm { background: #ffedd5; color: #c2410c; }
+    .tag-cool { background: #e0f2fe; color: #0369a1; }
+    .tag-star { background: #fef9c3; color: #a16207; }
+
+    .desc {
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+
+    .influencer-note {
+      font-size: 11px;
+      background: #f8fafc;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border-left: 3px solid #cbd5e1;
+      color: #64748b;
+    }
+
+    .footer-tip {
+      background: #0f172a;
+      border-top: 1px solid #1e293b;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .footer-tip strong {
+      color: #facc15;
+    }
+
+    .reset-btn {
+      background: #334155;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="badge-top">Korea 직구 Exclusives</div>
+    <div class="title-row">
+      <div class="title">Sephora HK Checklist</div>
+      <div class="counter" id="check-counter">0 / 11 Checked</div>
+    </div>
+    <input type="text" id="search-input" class="search-box" placeholder="Search brand, shade, MUA...">
+    
+    <div class="filter-pills">
+      <button class="pill active" onclick="filterItems('all', this)">All Items</button>
+      <button class="pill" onclick="filterItems('warm', this)">🍑 Warm Tone</button>
+      <button class="pill" onclick="filterItems('cool', this)">❄️ Cool Tone</button>
+      <button class="pill" onclick="filterItems('star', this)">🌟 MUA Holy Grail</button>
+      <button class="pill" onclick="filterItems('holiday', this)">🎁 Holiday Sets</button>
+    </div>
+  </div>
+
+  <div class="content-container" id="checklist">
+
+    <div class="section-title">1. Complexion & Face Sculpting</div>
+
+    <div class="item-card" data-category="warm cool" onclick="toggleCheck(this)">
+      <div class="checkbox"></div>
+      <div class="item-details">
+        <div class="item-header">
+          <div class="brand-title">MAKEUP BY MARIO</div>
+          <div class="tags">
+            <span class="tag tag-warm">🍑 Light Medium</span>
+            <span class="tag tag-cool">❄️ Medium</span>
+          </div>
+        </div>
+        <div class="product-name">SoftSculpt® Transforming Skin Enhancer</div>
+        <div class="desc">3-in-1 balm/tint/warmer. Sheer perimeter warmth without dark contour stripes or grease.</div>
+        <div class="influencer-note"><strong>Risabae / HyasawonA:</strong> Modern alternative to heavy contour sticks.</div>
+      </div>
+    </div>
+
+    <div class="item-card" data-category="star cool warm" onclick="toggleCheck(this)">
+      <div class="checkbox"></div>
+      <div class="item-details">
+        <div class="item-header">
+          <div class="brand-title">ONE/SIZE BY PATRICK STARRR</div>
+          <div class="tags">
+            <span class="tag tag-star">🌟 MUA Top</span>
+            <span class="tag tag-cool">❄️ Ultra Pink</span>
+          </div>
+        </div>
+        <div class="product-name">Ultimate Blurring Setting Powder</div>
+        <div class="desc">Extreme oil control & pore blurring for T-zone. Pink undertone brightens under-eyes.</div>
+        <div class="influencer-note"><strong>Sobong / Jella / Yootrue:</strong> Viral under-eye baking powder for combo skin.</div>
+      </div>
+    </div>
+
+    <div class="section-title">2. Cheeks & Blushes</div>
+
+    <div class="item-card" data-category="star warm cool" onclick="toggleCheck(this)">
+      <div class="checkbox"></div>
+      <div class="item-details">
+        <div class="item-header">
+          <div class="brand-title">PATRICK TA</div>
+          <div class="tags">
+            <span class="tag tag-star">🌟 MUA Top</span>
+            <span class="tag tag-warm">🍑 Do We Know Her?</span>
+          </div>
+        </div>
+        <div class="product-name">Major Headlines Crème & Powder Blush Duo</div>
+        <div class="desc">Powder first to lock oily skin, then cream on top for a long-lasting 3D flush.</div>
+        <div class="influencer-note"><strong>Sobong / Minsco:</strong> "Not Too Much" (cool mauve) & "Do We Know Her?" (warm peach).</div>
+      </div>
+    </div>
+
+    <div class="item-card" data-category="cool warm" onclick="toggleCheck(this)">
+      <div class="checkbox"></div>
+      <div class="item-details">
+        <div class="item-header">
+          <div class="brand-title">HAUS LABS</div>
+          <div class="tags">
+            <span class="tag tag-cool">❄️ Lavender Blonde</span>
+            <span class="tag tag-warm">🍑 Peach Lotus</span>
+          </div>
+        </div>
+        <div class="product-name">Color Fuse Talc-Free Powder Blush</div>
+        <div class="desc">Arnica-infused texture-smoothing powder. Pairs cleanly with Haus Labs Moonstone highlighter.</div>
+        <div class="influencer-note"><strong>Minsco / Arang:</strong> Lavender Blonde is a viral cool-tone brightening staple.</div>
+      </div>
+    </div>
+
+    <div class="item-card" data-category="warm" onclick="toggleCheck(this)">
+      <div class="checkbox"></div>
+      <div class="item-details">
+        <div class="item-header">
+          <div class="brand-title">MAKEUP BY MARIO</div>
+          <div class="tags">
+            <span class="tag tag-warm">🍑 Creamy Peach</span>
+          </div>
+        </div>
+        <div class="product-name">Soft Pop Powder Blush</div>
+        <div class="desc">Micro-fine powder blush that soft-focuses texture on oily cheeks with buildable pigment.</div>
+      </div>
+    </div>
+
+    <div class="section-title">3. Eyeshadow Palettes</div>
+
+    <div class="item-card" data-category="star warm cool" onclick="toggleCheck(this)">
+      <div class="checkbox"></div>
+      <div class="item-details">
+        <div class="item-header">
+          <div class="brand-title">MAKEUP BY MARIO</div>
+          <div class="tags">
+            <span class="tag tag-star">🌟 MUA Top</span>
+            <span class="tag tag-warm">🍑 Original</span>
+            <span class="tag tag-cool">❄️ The Neutrals</span>
+          </div>
+        </div>
+        <div class="product-name">Master Mattes® Eyeshadow Palette</div>
+        <div class="desc">Velvet-matte shades built for 2016-style socket depth & crease sculpting without fall-out.</div>
+        <div class="influencer-note"><strong>Risabae / Pony:</strong> Known as the ultimate socket-sculpting palette.</div>
+      </div>
+    </div>
+
+    <div class="item-card" data-category="star warm cool" onclick="toggleCheck(this)">
+      <div class="checkbox"></div>
+      <div class="item-details">
+        <div class="item-header">
+          <div class="brand-title">PATRICK TA</div>
+          <div class="tags">
+            <span class="tag tag-star">🌟 MUA Top</span>
+            <span class="tag tag-warm">🍑 / ❄️ All-Matte</span>
+          </div>
+        </div>
+        <div class="product-name">Major Dimension III Eyeshadow Palette</div>
+        <div class="desc">Dual warm & cool matte rows + cream bases for smudged eyeliner & defined sockets.</div>
+      </div>
+    </div>
+
+    <div class="item-card" data-category="warm cool" onclick="toggleCheck(this)">
+      <div class="checkbox"></div>
+      <div class="item-details">
+        <div class="item-header">
+          <div class="brand-title">NATASHA DENONA</div>
+          <div class="tags">
+            <span class="tag tag-cool">❄️ I Need a Nude</span>
+          </div>
+        </div>
+        <div class="product-name">I Need a Nude / Mini Nude Palette</div>
+        <div class="desc">Muted, buttery smokey nudes with high-impact metallic toppers and zero fall-out.</div>
+        <div class="influencer-note"><strong>Pony / Jella:</strong> Go-to for refined, high-glam nude eye depth.</div>
+      </div>
+    </div>
+
+    <div class="section-title">4. Holiday Sets</div>
+
+    <div class="item-card" data-category="holiday warm" onclick="toggleCheck(this)">
+      <div class="checkbox"></div>
+      <div class="item-details">
+        <div class="item-header">
+          <div class="brand-title">MAKEUP BY MARIO</div>
+          <div class="tags">
+            <span class="tag tag-warm">🎁 Holiday Set</span>
+          </div>
+        </div>
+        <div class="product-name">Mini Blush Veil & Skin Enhancer Duo</div>
+        <div class="desc">Travel-friendly compact with mini cream blush + mini skin-warming enhancer.</div>
+      </div>
+    </div>
+
+    <div class="item-card" data-category="holiday cool warm" onclick="toggleCheck(this)">
+      <div class="checkbox"></div>
+      <div class="item-details">
+        <div class="item-header">
+          <div class="brand-title">MAKEUP BY MARIO</div>
+          <div class="tags">
+            <span class="tag tag-cool">🎁 Holiday Set</span>
+          </div>
+        </div>
+        <div class="product-name">Long-Wearing Cream Shadow Duo Set</div>
+        <div class="desc">Two full-size cream shadows (smokey matte + shimmer) that lock on oily lids.</div>
+      </div>
+    </div>
+
+    <div class="item-card" data-category="holiday star warm" onclick="toggleCheck(this)">
+      <div class="checkbox"></div>
+      <div class="item-details">
+        <div class="item-header">
+          <div class="brand-title">PATRICK TA</div>
+          <div class="tags">
+            <span class="tag tag-star">🌟 MUA Top</span>
+            <span class="tag tag-warm">🎁 Holiday Set</span>
+          </div>
+        </div>
+        <div class="product-name">Major Headlines Blush & Brush Holiday Set</div>
+        <div class="desc">Limited-edition holiday packaging of his dual blush duos paired with a dual-ended brush.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-tip">
+    <div>Shopping Tip: <strong>Target Patrick Ta & Mario counters first!</strong></div>
+    <button class="reset-btn" onclick="resetAll()">Reset</button>
+  </div>
+
+  <script>
+    let checkedCount = 0;
+    const totalItems = document.querySelectorAll('.item-card').length;
+
+    function updateCounter() {
+      document.getElementById('check-counter').innerText = `${checkedCount} / ${totalItems} Checked`;
+    }
+
+    function toggleCheck(card) {
+      card.classList.toggle('checked');
+      checkedCount = document.querySelectorAll('.item-card.checked').length;
+      updateCounter();
+    }
+
+    function resetAll() {
+      document.querySelectorAll('.item-card').forEach(card => card.classList.remove('checked'));
+      checkedCount = 0;
+      updateCounter();
+    }
+
+    function filterItems(type, btn) {
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cards = document.querySelectorAll('.item-card');
+      cards.forEach(card => {
+        if (type === 'all') {
+          card.style.display = 'flex';
+        } else {
+          const categories = card.getAttribute('data-category');
+          if (categories && categories.includes(type)) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        }
+      });
+    }
+
+    document.getElementById('search-input').addEventListener('input', function(e) {
+      const query = e.target.value.toLowerCase();
+      const cards = document.querySelectorAll('.item-card');
+
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        if (text.includes(query)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
